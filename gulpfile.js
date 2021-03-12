@@ -1,34 +1,46 @@
-//  ------
-/* 第一種寫法
-  const gulp = require('gulp')
-  gulp.task('html', function () {
-    return return src('./src/**/ /*.html').pipe(dest('./public/'))
-  })
-
-  然後在command line 上面執行 gulp task
-*/
-
-//================================
-/* 第二種寫法
-const { src, dest } = require('gulp')
+var gulp = require('gulp')
+var sass = require('gulp-sass')
+var sourcemaps = require('gulp-sourcemaps')
+var browserSync = require('browser-sync').create()
+sass.compiler = require('node-sass')
 
 function copyHtml() {
-  return src('./src/**/ /*.html').pipe(dest('./public/'))
+  return gulp
+    .src('./src/**/*.html')
+    .pipe(gulp.dest('./public'))
+    .pipe(browserSync.stream())
 }
 
-** Public tasks are exported from your gulpfile, which allows them to be run by the gulp command.
+function compileSass() {
+  return gulp
+    .src('./src/scss/**/*.scss')
+    .pipe(sourcemaps.init())
+    .pipe(sass.sync({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('./public/css'))
+    .pipe(browserSync.stream())
+}
 
-exports.default = streamTask // gulp default streamTask
-*/
+function liveBrowser() {
+  browserSync.init({
+    server: {
+      baseDir: './public/',
+    },
+    port: 3000,
+  })
+}
 
-// =================================================================
+function watcher() {
+  gulp.watch('./src/**/*.html', gulp.series(copyHtml))
+  gulp.watch('./src/scss/**/*.scss', gulp.series(compileSass))
+}
 
-// var gulp = require('gulp')
-// function copyHtml(cb) {
-//   gulp.src('./src/**/*.html').pipe(gulp.dest('./public'))
-//   console.log(cb)
-//   cb()
-// }
+exports.default = gulp.series(
+  copyHtml,
+  compileSass,
+  gulp.parallel(liveBrowser, watcher)
+)
 
 // exports.default = copyHtml
 // exports.copy = copyHtml
+// exports.compileSass = compileSass

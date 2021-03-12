@@ -1,0 +1,1 @@
+{"version":3,"file":"all.css","sources":["all.scss"],"sourcesContent":["$primary: #aaa;\n\nbody {\n  background: $primary;\n  font-size: 12px;\n}\n"],"names":[],"mappings":"AAEA,AAAA,IAAI,AAAC,CACH,UAAU,CAHF,IAAI,CAIZ,SAAS,CAAE,IAAI,CAChB"}
